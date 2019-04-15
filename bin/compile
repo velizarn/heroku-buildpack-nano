@@ -1,0 +1,33 @@
+#!/bin/bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+## Configure environment (fail test)
+set -e
+
+## Buildpack directory
+readonly BP_DIR=$(cd "$(dirname "${0:-}")"/..; pwd) # absolute path
+
+readonly BUILD_DIR="${1:-}"
+readonly CACHE_DIR="${2:-}"
+
+NANO_FILENAME='nano.tar.gz'
+NANO_URL="https://github.com/Ehryk/heroku-nano/raw/master/heroku-nano-2.5.1/$NANO_FILENAME"
+
+## TODO Get URL from a config var
+
+echo "    -> Downloading Nano... (${NANO_URL})"
+
+curl --retry 2 --silent --max-time 60 --location "${NANO_URL}" --output "${CACHE_DIR}/${NANO_FILENAME}"
+
+# install
+echo "    -> Installing Nano..."
+
+mkdir -p "$BUILD_DIR/nano"
+tar -xf "${CACHE_DIR}/${NANO_FILENAME}" -C "${BUILD_DIR}/nano"
+
+# export
+PROFILE_PATH="$BUILD_DIR/.profile.d/nano.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH=$PATH:/app/nano' >> $PROFILE_PATH
+
+echo "    DONE"
