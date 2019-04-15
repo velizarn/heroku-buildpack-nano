@@ -1,19 +1,41 @@
 #!/bin/bash
 # bin/compile <build-dir> <cache-dir> <env-dir>
 
-## Configure environment (fail test)
+## Fail immediately on non-zero exit code.
 set -e
+## Fail immediately on non-zero exit code within a pipeline.
+set -o pipefail
 
 ## Buildpack directory
 readonly BP_DIR=$(cd "$(dirname "${0:-}")"/..; pwd) # absolute path
 
 readonly BUILD_DIR="${1:-}"
 readonly CACHE_DIR="${2:-}"
+readonly ENV_DIR="${3:-}"
 
-NANO_FILENAME='nano.tar.gz'
-NANO_URL="https://github.com/Ehryk/heroku-nano/raw/master/heroku-nano-2.5.1/$NANO_FILENAME"
+export_env_dir() {
+  env_dir=$1
+  whitelist_regex=${2:-'^(NANO_URL_CUSTOM)$'}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
+}
 
-## TODO Get URL from a config var
+export_env_dir $ENV_DIR
+
+if [ -z "$NANO_URL_CUSTOM" ]; then
+  echo "    -> Custom nano URL is not set, start downloading from default location"
+  NANO_FILENAME='nano.tar.gz'
+  NANO_URL="https://github.com/Ehryk/heroku-nano/raw/master/heroku-nano-2.5.1/$NANO_FILENAME"
+else
+  NANO_FILENAME=$(basename $NANO_URL_CUSTOM)
+  NANO_URL="$NANO_URL_CUSTOM"
+fi
 
 echo "    -> Downloading Nano... (${NANO_URL})"
 
