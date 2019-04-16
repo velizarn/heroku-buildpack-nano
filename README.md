@@ -6,7 +6,7 @@ Heroku buildpack that installs Nano text editor
 
 Installs Nano Ninja version from [Ehryk's](https://github.com/Ehryk) repository [heroku-nano](https://github.com/Ehryk/heroku-nano/) or if you prefer you can set a config var to download Nano from a custom location.
 
-Nano installation ends in `/app/nano` directory.
+Nano installation ends in `/app/vendor/nano` directory.
 
 ### Example usage
 
