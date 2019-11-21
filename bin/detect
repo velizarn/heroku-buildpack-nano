@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "heroku-buildpack-nano"
+echo "Nano editor"
 exit 0
