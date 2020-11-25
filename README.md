@@ -61,6 +61,14 @@ heroku config:set NANO_URL_CUSTOM=https://your-custom-url.domain.tld/nano.tar.gz
 - [Nano editor homepage](https://www.nano-editor.org/)
 - [Nano shortcuts](https://www.nano-editor.org/dist/latest/cheatsheet.html)
 
+### Troubleshooting 
+
+If your application runs on heroku-20 stack and _nano_ cannot be executed due to a following error or a similar one:
+```
+nano: error while loading shared libraries: libncursesw.so.5: cannot open shared object file: No such file or directory
+```
+In this case you can remove Nano buildpack and use [heroku/heroku-buildpack-apt](https://github.com/heroku/heroku-buildpack-apt) instead. With this buildpack you can install additional packages that are not included in the stack image. Even with the fork [velizarn/heroku-buildpack-apt](https://github.com/velizarn/heroku-buildpack-apt) you can define those packages in a config var instead of an Aptfile.
+
 ## License
 
 MIT © [Velizar Nenov](https://github.com/velizarn)
